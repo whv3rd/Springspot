@@ -10,7 +10,9 @@ const tracks = TRACKS.filter((t) => TRACK_INFO[t].checkpoint !== null);
 ---
 
 <BaseLayout
-  title="The Path"
+  pageType="CollectionPage"
+  breadcrumbs={[{ name: 'The Path', path: '/path' }]}
+  title="The Path: five tracks to an AI-run ecommerce business"
   description="Five tracks, one per Springspot checkpoint, each in the same six parts. Overviews, requirements and checklists are free."
 >
   <div class="container page">

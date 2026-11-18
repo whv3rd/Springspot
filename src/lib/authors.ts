@@ -1,6 +1,6 @@
 import { getEntry, type CollectionEntry, type ReferenceDataEntry } from 'astro:content';
 
-import { absoluteUrl, type AuthorInfo } from './schema';
+import { absoluteUrl, pageUrl, type AuthorInfo } from './schema';
 
 /** Root-relative URL of an author's page. */
 export function authorPath(id: string): string {
@@ -25,7 +25,7 @@ export function authorInfo(
   if (!site) throw new Error('Set `site` in astro.config.mjs (or pass --site) for absolute URLs.');
   const { name, role, bio, image, links } = author.data;
   return {
-    url: absoluteUrl(authorPath(author.id), site, base),
+    url: pageUrl(authorPath(author.id), site, base),
     name,
     role,
     bio,

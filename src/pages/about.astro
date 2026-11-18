@@ -10,7 +10,12 @@ if (!page) throw new Error('Missing src/content/pages/about.md');
 const { Content } = await render(page);
 ---
 
-<BaseLayout title={page.data.title} description={page.data.description}>
+<BaseLayout
+  title={page.data.title}
+  description={page.data.description}
+  pageType="AboutPage"
+  breadcrumbs={[{ name: page.data.title, path: '/about' }]}
+>
   <div class="container page">
     <PageHeader eyebrow="About and advisory" title={page.data.title} lede={page.data.description} />
 

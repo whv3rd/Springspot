@@ -7,7 +7,15 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
 import Button from '@/components/Button.astro';
 import PageHeader from '@/components/PageHeader.astro';
 import { getTrackEntries } from '@/lib/path-content';
-import { PART_ACCESS, PART_LABELS, TRACK_INFO, TRACKS, partHref, type Track } from '@/lib/path';
+import {
+  PART_ACCESS,
+  PART_LABELS,
+  TRACK_INFO,
+  TRACKS,
+  partHref,
+  trackHref,
+  type Track,
+} from '@/lib/path';
 
 // Every track gets a page, even before any of its parts are written.
 export const getStaticPaths = (() =>
@@ -21,7 +29,15 @@ const eyebrow = info.checkpoint
   : 'Free guide';
 ---
 
-<BaseLayout title={info.title} description={info.description}>
+<BaseLayout
+  title={info.parts.length > 1 ? `${info.title}: the Path track` : `${info.title}: the Path`}
+  description={info.description}
+  pageType="CollectionPage"
+  breadcrumbs={[
+    { name: 'The Path', path: '/path' },
+    { name: info.title, path: trackHref(track) },
+  ]}
+>
   <div class="container page">
     <Breadcrumb items={[{ label: 'The Path', href: '/path' }, { label: info.title }]} />
     <PageHeader eyebrow={eyebrow} title={info.title} lede={info.description} />
