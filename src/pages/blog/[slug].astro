@@ -9,51 +9,80 @@ import Button from '@/components/Button.astro';
 import { authorInfo, authorPath, getPostAuthor } from '@/lib/authors';
 import { formatDate, getPublishedPosts } from '@/lib/blog';
 import { PILLAR_LABELS } from '@/lib/path';
-import {
-  absoluteUrl,
-  blogPostingSchema,
-  breadcrumbSchema,
-  faqSchema,
-  graph,
-  personSchema,
-} from '@/lib/schema';
+import PostList from '@/components/PostList.astro';
+import { blogPostingSchema, faqSchema, pageUrl, personSchema } from '@/lib/schema';
+import { postCard } from '@/lib/social-cards';
 
 // Drafts are filtered out, so they never get a route.
 export const getStaticPaths = (async () => {
   const posts = await getPublishedPosts();
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
 }) satisfies GetStaticPaths;
 
-const { post } = Astro.props;
+const { post, posts } = Astro.props;
 const { title, description, date, updated, pillar, takeaways, faq, gate } = post.data;
 const { Content } = await render(post);
 
 const author = await getPostAuthor(post.data.author);
+const site = Astro.site!;
 const base = import.meta.env.BASE_URL;
-const info = authorInfo(author, Astro.site, base);
-const url = absoluteUrl(`/blog/${post.id}`, Astro.site!, base);
+const info = authorInfo(author, site, base);
+const url = pageUrl(`/blog/${post.id}`, site, base);
+const section = PILLAR_LABELS[pillar];
 
-const schema = graph([
+const card = postCard(post.id);
+const image = card && {
+  src: card.src,
+  alt: `${title}. ${section}, by ${author.data.name}.`,
+  width: card.width,
+  height: card.height,
+};
+
+// Words in the body, review notes and markup left out.
+const wordCount = (post.body ?? '')
+  .replace(/<!--[\s\S]*?-->/g, '')
+  .replace(/[#*_>`[\]()-]/g, ' ')
+  .split(/\s+/)
+  .filter(Boolean).length;
+
+const schema = [
   blogPostingSchema({
     url,
     title,
     description,
     date,
     updated,
-    section: PILLAR_LABELS[pillar],
+    section,
     author: info,
-    siteUrl: absoluteUrl('/', Astro.site!, base),
+    siteUrl: pageUrl('/', site, base),
+    images: card ? [new URL(card.src, site).href] : undefined,
+    wordCount,
   }),
   personSchema(info),
-  breadcrumbSchema([
-    { name: 'Blog', url: absoluteUrl('/blog', Astro.site!, base) },
-    { name: title, url },
-  ]),
   ...(faq?.length ? [faqSchema(faq, url)] : []),
-]);
+];
+
+// Related reading: same pillar first, then the newest posts. Keeps every post a click
+// or two from the rest, for readers and for crawlers.
+const others = posts.filter((p) => p.id !== post.id);
+const related = [
+  ...others.filter((p) => p.data.pillar === pillar),
+  ...others.filter((p) => p.data.pillar !== pillar),
+].slice(0, 3);
 ---
 
-<BaseLayout title={title} description={description} ogType="article" schema={schema}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogType="article"
+  schema={schema}
+  breadcrumbs={[
+    { name: 'Blog', path: '/blog' },
+    { name: title, path: `/blog/${post.id}` },
+  ]}
+  image={image}
+  article={{ published: date, modified: updated, section, authorUrl: info.url }}
+>
   <article class="container page">
     <Breadcrumb items={[{ label: 'Blog', href: '/blog' }, { label: title }]} />
     <header>
@@ -138,6 +167,15 @@ const schema = graph([
         </dl>
       </section>
     ) : null}
+
+    {related.length > 0 && (
+      <section class="related" aria-labelledby="related-title">
+        <h2 id="related-title" class="section-title">
+          Keep reading
+        </h2>
+        <PostList posts={related} headingLevel={3} />
+      </section>
+    )}
 
     <aside class="post-cta" aria-labelledby="post-cta-title">
       <h2 id="post-cta-title" class="section-title">
@@ -266,6 +304,10 @@ const schema = graph([
   .post-gate {
     max-width: var(--width-prose);
     margin-top: var(--space-7);
+  }
+
+  .related {
+    max-width: var(--width-prose);
   }
 
   .post-cta {

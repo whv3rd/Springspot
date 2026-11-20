@@ -27,6 +27,7 @@ Detail lives in `docs/`:
 - **Analytics:** GA4 through GTM, via the shared helper `/analytics.js` (lives in whv3rd/willvinton.com; see its `TRACKING.md`). `<Button href>` is a `cta_click` by default; tag anything else with `data-track="event"` + `data-track-<param>`, and send form/Score outcomes with `track()` from `src/lib/analytics.ts`. Never send what someone typed.
 - **Dependencies:** minimal. Ask before adding anything beyond Astro and dev tooling, and before any paid service.
 - **Workflow:** small commits on a branch, one PR per milestone (M0–M5, see handoff §4).
+- **Search:** metadata, JSON-LD, social cards, sitemap and feed come from `BaseLayout` and `src/lib/schema.ts` (see README, "Search and sharing"). New pages pass `breadcrumbs`; new posts need a social card (`scripts/social-cards.mjs`). Only `PRODUCTION_HOSTS` builds are indexable.
 - The site should itself meet the Springspot Standard — fast, on-system, accessible (Lighthouse 95+).
 
 ## Open decisions

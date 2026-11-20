@@ -2,16 +2,20 @@
 import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import stripReviewNotes from './integrations/strip-review-notes.mjs';
+import seoOutput from './integrations/seo-output.mjs';
 import { rehypeBrandTerms } from './src/lib/brand-terms.ts';
 
 export default defineConfig({
   // Placeholder until the brand and domain are decided (see CLAUDE.md, open decisions).
+  // The live build passes --site https://www.willvinton.com --base /springspot. Builds for
+  // any host not in PRODUCTION_HOSTS (src/lib/site.ts), this one included, are noindex.
   site: 'https://springspot.pages.dev',
   output: 'static',
   trailingSlash: 'ignore',
   // Bold, colour-coded branded terms (Springspot Score, Stack, Path...) in all Markdown.
   markdown: { rehypePlugins: [rehypeBrandTerms] },
-  integrations: [mdx(), stripReviewNotes()],
+  // seoOutput runs last: it reads the finished pages to write sitemap.xml.
+  integrations: [mdx(), stripReviewNotes(), seoOutput()],
   env: {
     schema: {
       // Klaviyo, for the Score's email gate. Both are public by design: the client

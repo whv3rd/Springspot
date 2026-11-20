@@ -6,7 +6,7 @@ import Breadcrumb from '@/components/Breadcrumb.astro';
 import PostList from '@/components/PostList.astro';
 import { authorInfo } from '@/lib/authors';
 import { getPublishedPosts } from '@/lib/blog';
-import { absoluteUrl, breadcrumbSchema, graph, profilePageSchema } from '@/lib/schema';
+import { personId, personSchema } from '@/lib/schema';
 
 export const getStaticPaths = (async () => {
   const authors = await getCollection('authors');
@@ -20,16 +20,22 @@ const posts = (await getPublishedPosts()).filter((post) => post.data.author.id =
 
 const base = import.meta.env.BASE_URL;
 const info = authorInfo(author, Astro.site, base);
-const schema = graph([
-  profilePageSchema(info),
-  breadcrumbSchema([
-    { name: 'Blog', url: absoluteUrl('/blog', Astro.site!, base) },
-    { name, url: info.url },
-  ]),
-]);
+// The bio runs long for a search snippet; the first sentence is the summary.
+const summary = bio.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? bio;
 ---
 
-<BaseLayout title={name} description={bio} ogType="profile" schema={schema}>
+<BaseLayout
+  title={name}
+  description={summary}
+  ogType="profile"
+  pageType="ProfilePage"
+  mainEntity={personId(info)}
+  schema={[personSchema(info)]}
+  breadcrumbs={[
+    { name: 'Blog', path: '/blog' },
+    { name, path: `/authors/${author.id}` },
+  ]}
+>
   <div class="container page">
     <Breadcrumb items={[{ label: 'Blog', href: '/blog' }, { label: name }]} />
 

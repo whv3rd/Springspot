@@ -91,7 +91,7 @@ Nothing launches until Will says so. Before the public launch, Claude checks in 
 - [ ] No employer names or private details in public content
 - [ ] All `DRAFT COPY` and `PLACEHOLDER` markers resolved or accepted
 - [ ] Domain decided and `site` URL updated
-- [ ] M5 checks done: Lighthouse 95+, meta and OG tags, sitemap, RSS
+- [ ] M5 checks done: Lighthouse 95+, meta and OG tags, sitemap, RSS (meta, OG, JSON-LD, sitemap and RSS are in; Lighthouse still to run on the live site)
 - [ ] Will gives an explicit go
 
 ## Open decisions

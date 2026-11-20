@@ -2,24 +2,140 @@
 import '@/styles/global.css';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
-import { serializeJsonLd, type JsonLd } from '@/lib/schema';
+import defaultCard from '@/assets/og/default.png';
+import {
+  absoluteUrl,
+  breadcrumbSchema,
+  graph,
+  organizationSchema,
+  pageUrl,
+  personId,
+  serializeJsonLd,
+  webPageSchema,
+  websiteSchema,
+  type JsonLd,
+  type WebPageType,
+} from '@/lib/schema';
+import { authorPath } from '@/lib/authors';
+import {
+  LOGO_PATH,
+  ROBOTS_INDEX,
+  SITE_AUTHOR,
+  SITE_AUTHOR_NAME,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  isProductionSite,
+} from '@/lib/site';
 import { PUBLIC_KLAVIYO_SITE_KEY } from 'astro:env/client';
+
+export interface PageCrumb {
+  name: string;
+  /** Root-relative path, e.g. /blog. */
+  path: string;
+}
+
+export interface SocialImage {
+  /** Root-relative or absolute URL of a 1200×630 image. */
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ArticleMeta {
+  published: Date;
+  modified?: Date;
+  section?: string;
+  /** Absolute URL of the author's page. */
+  authorUrl?: string;
+}
 
 interface Props {
   title: string;
   description: string;
-  /** Keep a page out of search results (e.g. the styleguide). */
+  /** Keep a page out of search results (e.g. the styleguide, paywalled parts). */
   noindex?: boolean;
   /** Open Graph type: 'article' for blog posts, 'profile' for author pages. */
   ogType?: 'website' | 'article' | 'profile';
-  /** schema.org JSON-LD for this page, usually a graph() from @/lib/schema. */
-  schema?: JsonLd;
+  /** Extra schema.org nodes for this page; the layout adds the site, page and breadcrumbs. */
+  schema?: JsonLd[];
+  /** Ancestors and this page, Home excluded (it's added). Builds the BreadcrumbList. */
+  breadcrumbs?: PageCrumb[];
+  /** schema.org type of the page node. */
+  pageType?: WebPageType;
+  /** @id of the page's main entity, e.g. the Person on a profile page. */
+  mainEntity?: string;
+  /** Social card. Defaults to the site card. */
+  image?: SocialImage;
+  /** Open Graph article metadata, for blog posts. */
+  article?: ArticleMeta;
 }
 
-const { title, description, noindex = false, ogType = 'website', schema } = Astro.props;
-const BRAND = 'Springspot AI';
-const fullTitle = title === BRAND ? title : `${title} · ${BRAND}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const {
+  title,
+  description,
+  noindex = false,
+  ogType = 'website',
+  schema = [],
+  breadcrumbs,
+  pageType,
+  mainEntity,
+  image,
+  article,
+} = Astro.props;
+
+const site = Astro.site!;
+const base = import.meta.env.BASE_URL;
+// A title that already leads with the brand (the home page) isn't suffixed again.
+const fullTitle = title.startsWith(SITE_NAME) ? title : `${title} · ${SITE_NAME}`;
+// Canonical URLs always end in a slash: that's where the static host serves each page.
+const canonical = new URL(Astro.url.pathname.replace(/\/?$/, '/'), site).href;
+const siteUrl = pageUrl('/', site, base);
+const production = isProductionSite(site);
+const robots = !production ? 'noindex, nofollow' : noindex ? 'noindex, follow' : ROBOTS_INDEX;
+
+const card = image ?? {
+  src: defaultCard.src,
+  alt: `${SITE_NAME}: run leaner, launch more and scale without adding headcount.`,
+  width: defaultCard.width,
+  height: defaultCard.height,
+};
+const cardUrl = new URL(card.src, site).href;
+
+const crumbs = breadcrumbs?.length
+  ? [
+      { name: SITE_NAME, url: siteUrl },
+      ...breadcrumbs.map((c) => ({ name: c.name, url: pageUrl(c.path, site, base) })),
+    ]
+  : null;
+
+const founderUrl = pageUrl(authorPath(SITE_AUTHOR), site, base);
+const siteInfo = {
+  url: siteUrl,
+  name: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  logo: absoluteUrl(LOGO_PATH, site, base),
+  founder: { id: personId({ url: founderUrl }), name: SITE_AUTHOR_NAME, url: founderUrl },
+};
+
+const jsonLd = graph([
+  organizationSchema(siteInfo),
+  websiteSchema(siteInfo),
+  webPageSchema({
+    url: canonical,
+    name: fullTitle,
+    description,
+    siteUrl,
+    type: pageType,
+    image: cardUrl,
+    hasBreadcrumb: !!crumbs,
+    datePublished: article?.published,
+    dateModified: article?.modified ?? article?.published,
+    mainEntity,
+  }),
+  ...(crumbs ? [breadcrumbSchema(crumbs)] : []),
+  ...schema,
+]);
 ---
 
 <!doctype html>
@@ -29,8 +145,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE_NAME} blog`} href="/rss.xml" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,13 +158,41 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap"
     />
     <meta name="color-scheme" content="light dark" />
-    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#fbf9f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121009" media="(prefers-color-scheme: dark)" />
+    <meta name="author" content={SITE_AUTHOR_NAME} />
+
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={BRAND} />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    {schema && <script type="application/ld+json" set:html={serializeJsonLd(schema)} />}
+    <meta property="og:image" content={cardUrl} />
+    {cardUrl.startsWith('https:') && <meta property="og:image:secure_url" content={cardUrl} />}
+    <meta property="og:image:type" content="image/png" />
+    {card.width && <meta property="og:image:width" content={String(card.width)} />}
+    {card.height && <meta property="og:image:height" content={String(card.height)} />}
+    <meta property="og:image:alt" content={card.alt} />
+    {article && (
+      <meta property="article:published_time" content={article.published.toISOString()} />
+    )}
+    {article && (
+      <meta
+        property="article:modified_time"
+        content={(article.modified ?? article.published).toISOString()}
+      />
+    )}
+    {article?.authorUrl && <meta property="article:author" content={article.authorUrl} />}
+    {article?.section && <meta property="article:section" content={article.section} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={cardUrl} />
+    <meta name="twitter:image:alt" content={card.alt} />
+
+    <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
     {/* Klaviyo onsite tracking (Active on Site, identify, hosted forms). Only when the key is set. */}
     {PUBLIC_KLAVIYO_SITE_KEY && (
       <script
