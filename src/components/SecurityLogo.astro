@@ -1,0 +1,62 @@
+---
+// Springspot Security mark and wordmark: a coil spring standing on a target circle.
+// The wordmark sits on navy, so the mark and "Security" use spring green.
+interface Props {
+  href?: string;
+}
+const { href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag
+  class="logo"
+  href={href}
+  {...(href ? { 'data-track': 'logo_click', 'data-track-link-text': 'Springspot Security' } : {})}
+>
+  <svg
+    class="logo__mark"
+    viewBox="0 0 32 32"
+    width="30"
+    height="30"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <ellipse cx="16" cy="26" rx="11" ry="4" />
+    <ellipse cx="16" cy="26" rx="4.5" ry="1.6" />
+    <path d="M16 25 L10.5 22 L21.5 18.5 L10.5 15 L21.5 11.5 L10.5 8 L21.5 4.5 L16 3" />
+  </svg>
+  <span class="logo__word">
+    Springspot <strong>Security</strong>
+  </span>
+</Tag>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    color: #ffffff;
+    text-decoration: none;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .logo__mark {
+    flex: none;
+    color: #5bd69b;
+  }
+
+  .logo strong {
+    font-weight: 700;
+    color: #5bd69b;
+  }
+</style>

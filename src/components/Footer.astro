@@ -1,6 +1,6 @@
 ---
 import BrandText from '@/components/BrandText.astro';
-import { PRIMARY_NAV } from '@/lib/nav';
+import { FAMILY_NAV, PRIMARY_NAV } from '@/lib/nav';
 
 const year = new Date().getFullYear();
 ---
@@ -23,6 +23,20 @@ const year = new Date().getFullYear();
       </ul>
     </nav>
   </div>
+  <nav
+    class="container site-footer__family"
+    aria-label="The Springspot family"
+    data-track-area="footer_family"
+  >
+    <p>The Springspot family</p>
+    <ul>
+      {FAMILY_NAV.map((item) => (
+        <li>
+          <a href={item.href}>{item.label}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
   <div class="container site-footer__legal">
     <p>
       © {year} Springspot AI. Built to the <BrandText text="Springspot Standard" />.
@@ -72,6 +86,26 @@ const year = new Date().getFullYear();
   .site-footer a:hover {
     color: var(--color-text);
     text-decoration: underline;
+  }
+
+  .site-footer__family {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .site-footer__family p {
+    color: var(--color-text-muted);
+  }
+
+  .site-footer .site-footer__family ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-5);
   }
 
   .site-footer__legal {

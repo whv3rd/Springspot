@@ -69,7 +69,17 @@ interface Props {
   image?: SocialImage;
   /** Open Graph article metadata, for blog posts. */
   article?: ArticleMeta;
+  /**
+   * Show the main Springspot header and footer. Off for self-contained sections that
+   * bring their own (e.g. /security).
+   */
+  chrome?: boolean;
+  /** Google Fonts stylesheet URL. Defaults to the main site's fonts. */
+  fonts?: string;
 }
+
+const SITE_FONTS =
+  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap';
 
 const {
   title,
@@ -82,6 +92,8 @@ const {
   mainEntity,
   image,
   article,
+  chrome = true,
+  fonts = SITE_FONTS,
 } = Astro.props;
 
 const site = Astro.site!;
@@ -153,10 +165,7 @@ const jsonLd = graph([
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap"
-    />
+    <link rel="stylesheet" href={fonts} />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#fbf9f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#121009" media="(prefers-color-scheme: dark)" />
@@ -206,10 +215,14 @@ const jsonLd = graph([
     <a class="skip-link" href="#main">
       Skip to content
     </a>
-    <Header />
-    <main id="main">
+    {chrome && <Header />}
+    {chrome ? (
+      <main id="main">
+        <slot />
+      </main>
+    ) : (
       <slot />
-    </main>
-    <Footer />
+    )}
+    {chrome && <Footer />}
   </body>
 </html>
