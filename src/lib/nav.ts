@@ -15,6 +15,16 @@ export const PRIMARY_NAV: NavItem[] = [
 ];
 
 /**
+ * The Springspot family, linked from the footers. Labs and willvinton.com live outside this
+ * site, so they're absolute: the deploy prefixes every root-relative link with /springspot.
+ */
+export const FAMILY_NAV: NavItem[] = [
+  { label: 'Springspot Security', href: '/security' },
+  { label: 'Springspot Labs', href: 'https://www.willvinton.com/labs/' },
+  { label: 'willvinton.com', href: 'https://www.willvinton.com/' },
+];
+
+/**
  * Whether a nav href is the current section. `base` is the site's base path
  * (import.meta.env.BASE_URL), stripped from the pathname first so the check still
  * works when the site is served from a subdirectory such as /springspot.

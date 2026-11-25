@@ -72,3 +72,11 @@ The site is fully static, so no adapter is needed. One-time setup in the Cloudfl
 After that, every push to `main` deploys to production, and every PR gets a preview deployment with its own URL, posted on the PR.
 
 The `site` URL in `astro.config.mjs` is a placeholder (`https://springspot.pages.dev`) until the domain is decided. Update it when a custom domain is attached in Pages → Custom domains, and add the domain to `PRODUCTION_HOSTS` in `src/lib/site.ts`: until then a Cloudflare build is `noindex`, so it can't compete in search with the live copy at willvinton.com/springspot.
+
+## Springspot Security (`/security`)
+
+A self-contained landing page for the security consultancy, served at `/springspot/security/` on willvinton.com. It has its own header, footer, fonts and palette (`BaseLayout` with `chrome={false}`) but still gets the site's metadata, JSON-LD and sitemap entry.
+
+- **Placeholders:** the prices and contact email are in `src/lib/security.ts` (`[YOUR PRICE]`, `[YOUR EMAIL]`). Every contact button is a `mailto:` built from that email.
+- **Positioning:** it's consulting. Copy must never imply certification, 24/7 monitoring, forensics, or compliance sign-off.
+- **The family:** both footers link the Springspot sites to each other (`FAMILY_NAV` in `src/lib/nav.ts`). Links to Labs and willvinton.com are absolute, because the deploy prefixes every root-relative link with `/springspot`.

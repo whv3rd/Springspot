@@ -1,0 +1,1030 @@
+---
+// Springspot Security: a self-contained landing page for the security consultancy.
+// It brings its own header, footer, fonts and palette, so the main site chrome is off.
+// Placeholders (prices, email) live in src/lib/security.ts.
+//
+// Positioning guardrail: this is consulting. Never imply certification, 24/7 monitoring,
+// forensics, or compliance sign-off. See the "What we are — and aren't" card.
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import SecurityLogo from '@/components/SecurityLogo.astro';
+import { SECURITY, SECURITY_NAV, securityMailto } from '@/lib/security';
+
+const FONTS =
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap';
+
+const reviewQuestions = [
+  'Who can get into what — and should they?',
+  'Which of your apps, plugins and vendors are the weak link?',
+  'If you got hit tomorrow, would you know — and what would you do first?',
+  "Are you paying for tools you don't need, or missing ones you do?",
+];
+
+const services = [
+  {
+    title: 'Ecosystem security review',
+    text: 'A full walk-through of your stack — hosting, ecommerce platform, apps and plugins, email, DNS, payments and integrations — mapped and rated for risk.',
+  },
+  {
+    title: 'Identity & access cleanup',
+    text: 'Who has admin, who left and still has a login, where MFA is missing, which shared passwords live in a spreadsheet. Then we help you fix it.',
+  },
+  {
+    title: 'Vulnerability scan & review',
+    text: 'Automated scanning of your public-facing sites and services, with a human reading the results so you get priorities, not a 300-page PDF.',
+  },
+  {
+    title: 'Vendor & third-party risk',
+    text: 'Your agencies, freelancers and SaaS vendors touch your data. We inventory them, check what they can reach, and flag the ones to tighten or replace.',
+  },
+  {
+    title: 'Fractional security lead',
+    text: 'A few hours a month of senior guidance: roadmap, policy basics, answering the security questionnaire your biggest customer just sent.',
+  },
+  {
+    title: 'Team awareness & phishing basics',
+    text: 'A practical session for your staff on the attacks that actually hit small businesses: invoice fraud, fake login pages, gift-card scams.',
+  },
+];
+
+const phases = [
+  {
+    title: 'Prepare',
+    text: "An incident playbook written for your business, a contact list for the day it's needed, and a tabletop exercise so your team has rehearsed it once.",
+    tags: ['Playbook', 'Tabletop', 'Backup check'],
+  },
+  {
+    title: 'Respond',
+    text: 'If something goes wrong, we help you triage, lock things down, coordinate with your platforms and insurer, and bring in a specialist forensics firm when the situation calls for one.',
+    tags: ['Triage', 'Containment', 'Partner hand-off'],
+  },
+  {
+    title: 'Recover',
+    text: 'A clear post-incident review: what happened, what changed, and the short list of fixes that keep it from happening again.',
+    tags: ['Root cause', 'Fix plan', 'Follow-up review'],
+  },
+];
+
+const steps = [
+  {
+    title: 'Free intro call',
+    text: "30 minutes on what you run, what worries you, and whether we're the right fit.",
+  },
+  {
+    title: 'Map your ecosystem',
+    text: 'Read-only access and a short questionnaire. We map every system, account and vendor.',
+  },
+  {
+    title: 'Plain-English report',
+    text: 'A risk score, the top fixes ranked by impact and effort, and a walkthrough call.',
+  },
+  {
+    title: 'Fix & follow up',
+    text: 'Do it yourself with our checklist, or have us help. We re-check in 90 days.',
+  },
+];
+
+const packages = [
+  {
+    name: 'Spot Check',
+    summary: 'A fast read on where you stand.',
+    price: SECURITY.prices.spotCheck,
+    per: '',
+    items: [
+      'External vulnerability scan',
+      'Access & MFA audit',
+      'Top-10 fix list',
+      '45-minute readout',
+    ],
+    cta: 'Get a Spot Check',
+    featured: false,
+  },
+  {
+    name: 'Full Ecosystem Review',
+    summary: 'Everything you run, mapped and rated.',
+    price: SECURITY.prices.fullReview,
+    per: '',
+    items: [
+      'Everything in Spot Check',
+      'Platform, app & integration review',
+      'Vendor & third-party risk map',
+      'Incident playbook starter',
+      '90-day re-check',
+    ],
+    cta: 'Book a review',
+    featured: true,
+  },
+  {
+    name: 'Ongoing Advisor',
+    summary: 'A security lead on call, part-time.',
+    price: SECURITY.prices.advisor,
+    per: ' / month',
+    items: [
+      'Monthly check-in & roadmap',
+      'Quarterly scan & access review',
+      'Customer questionnaire help',
+      "First call when something's off",
+    ],
+    cta: 'Talk about advisory',
+    featured: false,
+  },
+];
+
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<BaseLayout
+  title="Springspot Security: SMB security consulting"
+  description="Independent security consulting for small and mid-sized businesses: ecosystem reviews, access cleanup, vendor risk and incident readiness, at small-business prices."
+  breadcrumbs={[{ name: 'Springspot Security', path: '/security' }]}
+  chrome={false}
+  fonts={FONTS}
+>
+  <div class="sec">
+    <header class="top dark">
+      <div class="wrap top__inner">
+        <SecurityLogo href="#main" />
+        <nav class="top__nav" aria-label="Springspot Security" data-track-area="security_nav">
+          <ul>
+            {SECURITY_NAV.map((item) => (
+              <li>
+                <a href={item.href} data-track="nav_click" data-track-link-text={item.label}>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div class="top__actions">
+          <a class="btn btn--coral-outline" href="#help-now">
+            Something's wrong? Get help
+          </a>
+          <a class="btn btn--green" href="#contact">
+            Book a free call
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <!-- 2. Hero -->
+      <section class="dark hero" aria-labelledby="hero-title">
+        <div class="wrap two-col">
+          <div>
+            <p class="eyebrow">Security consulting for small &amp; mid-sized businesses</p>
+            <h1 id="hero-title">
+              Enterprise-grade thinking about your security. Small-business pricing.
+            </h1>
+            <p class="lede">
+              The big security firms are built for companies with security teams. Springspot is
+              built for the ones without. We review your infrastructure, your apps and your vendors,
+              tell you plainly where you're exposed, and help you fix what matters first.
+            </p>
+            <div class="hero-actions">
+              <a
+                class="btn btn--green btn--lg"
+                href={securityMailto('Free 30-minute call')}
+                data-track="cta_click"
+                data-track-link-text="Book a free 30-minute call"
+              >
+                Book a free 30-minute call
+              </a>
+              <a class="btn btn--light-outline btn--lg" href="#packages">
+                See packages
+              </a>
+            </div>
+          </div>
+          <aside class="card card--dark" aria-labelledby="review-answers">
+            <h2 id="review-answers" class="card__title">
+              What a review answers
+            </h2>
+            <ul class="arrows">
+              {reviewQuestions.map((q) => (
+                <li>{q}</li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 3. Problem -->
+      <section class="light" aria-labelledby="problem-title">
+        <div class="wrap two-col two-col--top">
+          <h2 id="problem-title">
+            Most small businesses find out about their security gaps the hard way.
+          </h2>
+          <div class="copy">
+            <p>
+              You run on Shopify or WordPress, Google Workspace or Microsoft 365, a payment
+              processor, a dozen SaaS tools and a few contractors with admin access. Nobody owns
+              security — it's just assumed to be handled.
+            </p>
+            <p>
+              Then something happens, and you discover what real incident response costs. Springspot
+              exists so the review happens before the incident, at a price that makes sense for a
+              business your size.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Services -->
+      <section id="services" class="light" aria-labelledby="services-title">
+        <div class="wrap">
+          <p class="eyebrow">Services</p>
+          <h2 id="services-title">The essentials, sized for a lean team</h2>
+          <ol class="grid grid--3 services" role="list">
+            {services.map((s, i) => (
+              <li class="card card--light">
+                <span class="num" aria-hidden="true">
+                  {pad(i + 1)}
+                </span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
+          </ol>
+          <div class="callout">
+            <h3>Vendor-neutral tool advice</h3>
+            <p>
+              We don't resell software. When you need a tool — password manager, backups, endpoint
+              protection — we tell you what fits your size and budget, and what you can skip.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Incident readiness -->
+      <section id="incident" class="dark" aria-labelledby="incident-title">
+        <div class="wrap">
+          <p class="eyebrow">Incident readiness</p>
+          <h2 id="incident-title">
+            The best time to plan for an incident is before you're in one.
+          </h2>
+          <p class="lede">
+            Speaking from experience: when it happens, the first 48 hours decide a lot. We help you
+            get ready, stay steady in the moment, and come out stronger.
+          </p>
+          <div class="grid grid--3">
+            {phases.map((p) => (
+              <article class="card card--dark">
+                <h3 class="card__title card__title--green">{p.title}</h3>
+                <p>{p.text}</p>
+                <p class="tags">{p.tags.join(' · ')}</p>
+              </article>
+            ))}
+          </div>
+          <div id="help-now" class="help-now" tabindex="-1">
+            <div>
+              <h3>Dealing with something right now?</h3>
+              <p>
+                Reach out and we'll help you work out next steps — including whether you need a full
+                incident response firm.
+              </p>
+            </div>
+            <a
+              class="btn btn--coral btn--lg"
+              href={securityMailto('Urgent: need help now')}
+              data-track="cta_click"
+              data-track-link-text="Contact us now"
+            >
+              Contact us now
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. How it works -->
+      <section id="how" class="light" aria-labelledby="how-title">
+        <div class="wrap">
+          <h2 id="how-title">Four steps, no jargon</h2>
+          <ol class="grid grid--4 steps" role="list">
+            {steps.map((s, i) => (
+              <li class="step">
+                <span class="step__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <!-- 7. Packages -->
+      <section id="packages" class="alt" aria-labelledby="packages-title">
+        <div class="wrap">
+          <h2 id="packages-title">Fixed scope. Fixed price. No retainer required.</h2>
+          <div class="grid grid--3 packages">
+            {packages.map((p) => (
+              <article class={p.featured ? 'card card--dark pkg' : 'card card--light pkg'}>
+                {p.featured && <p class="eyebrow">Most complete</p>}
+                <h3>{p.name}</h3>
+                <p class="pkg__summary">{p.summary}</p>
+                <p class="pkg__price">
+                  {p.price}
+                  {p.per && <span class="pkg__per">{p.per}</span>}
+                </p>
+                <ul class="checks">
+                  {p.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+                <a
+                  class={p.featured ? 'btn btn--green pkg__cta' : 'btn btn--ink-outline pkg__cta'}
+                  href={securityMailto(p.name)}
+                  data-track="cta_click"
+                  data-track-link-text={p.cta}
+                >
+                  {p.cta}
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. About -->
+      <section id="about" class="light" aria-labelledby="about-title">
+        <div class="wrap two-col two-col--top">
+          <div class="copy">
+            <p class="eyebrow">Why Springspot</p>
+            <h2 id="about-title">Built by an operator who's been through it.</h2>
+            <p>
+              Springspot was started by an ecommerce and technology leader with nearly two decades
+              running digital platforms — and first-hand experience leading a business through a
+              security incident with a top-tier response firm.
+            </p>
+            <p>
+              That process was excellent, and priced for companies with a security budget.
+              Springspot brings the same discipline to businesses that don't have one.
+            </p>
+          </div>
+          <aside class="card card--light" aria-labelledby="are-arent">
+            <h3 id="are-arent">What we are — and aren't</h3>
+            <ul class="plain">
+              <li>
+                <strong>We are</strong> an independent consultancy: practical reviews, clear
+                priorities and hands-on help.
+              </li>
+              <li>
+                <strong>We aren't</strong> a certified auditor, a 24/7 monitoring center or a
+                forensics lab. We don't issue compliance attestations.
+              </li>
+              <li>
+                <strong>When you need more,</strong> we'll say so and help you find the right
+                specialist — and stay on as your translator.
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 9. CTA -->
+      <section id="contact" class="dark cta" aria-labelledby="contact-title" tabindex="-1">
+        <div class="wrap">
+          <h2 id="contact-title">Find your weak spots before someone else does.</h2>
+          <p class="lede">30 minutes, no cost, no sales script.</p>
+          <a
+            class="btn btn--green btn--lg"
+            href={securityMailto('Free 30-minute call')}
+            data-track="cta_click"
+            data-track-link-text="Book a free call"
+          >
+            Book a free call
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="dark foot">
+      <div class="wrap foot__inner">
+        <SecurityLogo />
+        <p>© 2026 Springspot Security · Wilmington, DE</p>
+        <p>Independent security consulting. Not a certified audit or incident response provider.</p>
+      </div>
+      <nav class="wrap family" aria-label="The Springspot family" data-track-area="footer_family">
+        <p>Part of the Springspot family:</p>
+        <ul>
+          <li>
+            <a href="/">Springspot AI</a>
+          </li>
+          <li>
+            <a href="https://www.willvinton.com/labs/">Springspot Labs</a>
+          </li>
+          <li>
+            <a href="https://www.willvinton.com/">willvinton.com</a>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* Only on this page: the section has its own fixed palette, light or dark OS theme. */
+  body:has(.sec) {
+    background: #f5f6f2;
+    color-scheme: light;
+  }
+</style>
+
+<style>
+  .sec {
+    --navy: #0f1b2b;
+    --card-navy: #172638;
+    --card-navy-border: #2a3b50;
+    --off-white: #f5f6f2;
+    --alt: #eceee8;
+    --ink: #13202f;
+    --body: #3b4a5a;
+    --on-navy: #c9d3de;
+    --muted-on-navy: #93a3b5;
+    --spring: #5bd69b;
+    --green-text: #1f7a52;
+    --callout: #e7f4ec;
+    --card-border: #dde2da;
+    --coral: #e8806a;
+    --coral-text: #ffb4a3;
+
+    --font-head: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+
+    flex: 1;
+    background: var(--off-white);
+    color: var(--body);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .sec :where(h1, h2, h3) {
+    font-family: var(--font-head);
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1.05;
+  }
+
+  h2 {
+    font-size: clamp(30px, 4vw, 38px);
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    max-width: 68ch;
+  }
+
+  a,
+  a:hover {
+    color: inherit;
+  }
+
+  a:focus-visible,
+  [tabindex='-1']:focus-visible {
+    outline: 3px solid var(--spring);
+    outline-offset: 3px;
+  }
+
+  .light a:focus-visible,
+  .alt a:focus-visible {
+    outline-color: var(--green-text);
+  }
+
+  main:focus,
+  [tabindex='-1']:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 24px;
+  }
+
+  section {
+    padding-block: clamp(64px, 10vw, 96px);
+    scroll-margin-top: 0;
+  }
+
+  .light {
+    background: var(--off-white);
+  }
+
+  .alt {
+    background: var(--alt);
+  }
+
+  .dark {
+    background: var(--navy);
+    color: var(--on-navy);
+  }
+
+  .dark :where(h1, h2, h3) {
+    color: #ffffff;
+  }
+
+  .eyebrow {
+    margin-bottom: 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-text);
+  }
+
+  .dark .eyebrow,
+  .card--dark .eyebrow {
+    color: var(--spring);
+  }
+
+  .lede {
+    margin-top: 20px;
+    font-size: 19px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  /* ---- Buttons ---- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    border: 1.5px solid transparent;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .btn--lg {
+    min-height: 52px;
+    padding-inline: 24px;
+    font-size: 16px;
+  }
+
+  .btn--green {
+    background: var(--spring);
+    color: var(--navy);
+  }
+
+  .btn--green:hover {
+    background: #7ee0b1;
+  }
+
+  .btn--coral {
+    background: var(--coral);
+    color: var(--navy);
+  }
+
+  .btn--coral:hover {
+    background: var(--coral-text);
+  }
+
+  .btn--coral-outline {
+    border-color: var(--coral);
+    color: var(--coral-text);
+  }
+
+  .btn--coral-outline:hover {
+    background: rgb(232 128 106 / 0.14);
+  }
+
+  .btn--light-outline {
+    border-color: var(--muted-on-navy);
+    color: #ffffff;
+  }
+
+  .btn--light-outline:hover {
+    border-color: #ffffff;
+  }
+
+  .btn--ink-outline {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .btn--ink-outline:hover {
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  /* ---- Header ---- */
+  .top {
+    border-bottom: 1px solid var(--card-navy-border);
+  }
+
+  .top__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    padding-block: 14px;
+  }
+
+  /* Narrow: logo and buttons on the first row, the nav on its own row below. */
+  .top__nav {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .top__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 18px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .top__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--on-navy);
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .top__nav a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .top__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .top__actions .btn {
+    padding-inline: 16px;
+  }
+
+  /* Wide: one row, logo · nav · buttons. */
+  @media (min-width: 1200px) {
+    .top__inner {
+      flex-wrap: nowrap;
+    }
+
+    .top__nav {
+      order: 0;
+      flex: 1 1 auto;
+    }
+
+    .top__nav ul {
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 0 16px;
+    }
+
+    .top__actions {
+      flex-wrap: nowrap;
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .top__actions {
+      margin-left: 0;
+    }
+  }
+
+  /* ---- Layout ---- */
+  .two-col {
+    display: grid;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .two-col--top {
+    align-items: start;
+  }
+
+  .grid {
+    display: grid;
+    gap: 24px;
+    margin-top: 40px;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .two-col {
+      grid-template-columns: 1.15fr 1fr;
+    }
+
+    .hero .two-col {
+      grid-template-columns: 1.35fr 1fr;
+      gap: 64px;
+    }
+
+    .grid--3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid--4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 899px) {
+    .grid--3:not(.packages),
+    .grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .copy > * + * {
+    margin-top: 18px;
+  }
+
+  .copy .eyebrow + h2 {
+    margin-top: 0;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    padding: 30px;
+    border: 1px solid;
+    border-radius: 16px;
+  }
+
+  .card > * + * {
+    margin-top: 12px;
+  }
+
+  .card--light {
+    background: #ffffff;
+    border-color: var(--card-border);
+  }
+
+  .card--dark {
+    background: var(--card-navy);
+    border-color: var(--card-navy-border);
+    color: var(--on-navy);
+  }
+
+  .card--dark :where(h2, h3) {
+    color: #ffffff;
+  }
+
+  .card__title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .card--dark .card__title--green {
+    color: var(--spring);
+  }
+
+  .num {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green-text);
+  }
+
+  .tags {
+    margin-top: 18px;
+    font-size: 14px;
+    color: var(--muted-on-navy);
+  }
+
+  .arrows,
+  .checks,
+  .plain {
+    padding: 0;
+    list-style: none;
+  }
+
+  .arrows li,
+  .checks li {
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .arrows li + li {
+    margin-top: 14px;
+  }
+
+  .checks li + li {
+    margin-top: 10px;
+  }
+
+  .arrows li::before,
+  .checks li::before {
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  .arrows li::before {
+    content: '→' / '';
+    color: var(--spring);
+  }
+
+  .checks li::before {
+    content: '✓' / '';
+    color: var(--green-text);
+  }
+
+  .card--dark .checks li::before {
+    color: var(--spring);
+  }
+
+  .plain li + li {
+    margin-top: 14px;
+  }
+
+  .plain strong {
+    color: var(--ink);
+  }
+
+  .callout {
+    margin-top: 24px;
+    padding: 28px 30px;
+    background: var(--callout);
+    border-radius: 16px;
+  }
+
+  .callout p {
+    margin-top: 8px;
+  }
+
+  .callout h3 {
+    color: var(--green-text);
+  }
+
+  /* ---- Help now ---- */
+  .help-now {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 32px;
+    margin-top: 32px;
+    padding: 28px 30px;
+    border: 1.5px solid var(--coral);
+    border-radius: 16px;
+    scroll-margin-top: 24px;
+  }
+
+  .help-now h3 {
+    color: var(--coral-text);
+  }
+
+  .help-now p {
+    margin-top: 6px;
+  }
+
+  /* ---- Steps ---- */
+  .step {
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+  }
+
+  .step > * + * {
+    margin-top: 10px;
+  }
+
+  .step__num {
+    display: block;
+    font-family: var(--font-head);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--green-text);
+  }
+
+  /* ---- Packages ---- */
+  .pkg {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pkg h3 {
+    font-size: 24px;
+  }
+
+  .pkg .eyebrow {
+    margin-bottom: 0;
+  }
+
+  .pkg__price {
+    margin-top: 20px;
+    font-family: var(--font-head);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .card--dark .pkg__price {
+    color: #ffffff;
+  }
+
+  .pkg__per {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .pkg .checks {
+    margin-top: 20px;
+    margin-bottom: 28px;
+  }
+
+  .pkg__cta {
+    margin-top: auto;
+    width: 100%;
+  }
+
+  /* ---- CTA + footer ---- */
+  .cta {
+    text-align: center;
+    padding-bottom: 72px;
+  }
+
+  .cta p {
+    margin-inline: auto;
+  }
+
+  .cta .btn {
+    margin-top: 28px;
+  }
+
+  .foot {
+    border-top: 1px solid var(--card-navy-border);
+  }
+
+  .foot__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding-block: 24px;
+    font-size: 14px;
+    color: var(--muted-on-navy);
+  }
+
+  .family {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 16px;
+    padding-bottom: 24px;
+    font-size: 14px;
+    color: var(--muted-on-navy);
+  }
+
+  .family ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .family a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--on-navy);
+  }
+
+  .family a:hover {
+    color: #ffffff;
+  }
+</style>
